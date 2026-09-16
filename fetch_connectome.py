@@ -12,19 +12,29 @@ import os
 from pathlib import Path
 
 import pandas as pd
+from dotenv import load_dotenv
 
 SERVER = "neuprint.janelia.org"
 DATASET = "male-cns:v1.0"
 TYPE_REGEX = "DNa.*"
 MAX_NEURONS = 50
 EXPORT_DIR = Path("connectome_export")
+ROOT_DIR = Path(__file__).resolve().parent
+ENV_PATH = ROOT_DIR / ".env"
+
+load_dotenv(ENV_PATH)
 
 
 def get_client(server: str = SERVER, dataset: str = DATASET):
-    """Return a neuPrint client using ``NEUPRINT_APPLICATION_CREDENTIALS``."""
+    """Return a neuPrint client using the token from ``.env``."""
     from neuprint import Client
 
-    token = os.environ.get("NEUPRINT_APPLICATION_CREDENTIALS")
+    token = os.environ.get("NEUPRINT_APPLICATION_CREDENTIALS", "").strip()
+    if not token:
+        raise SystemExit(
+            "Missing NEUPRINT_APPLICATION_CREDENTIALS. "
+            f"Copy .env.example to {ENV_PATH.name} and paste your neuPrint token."
+        )
     return Client(server, dataset=dataset, token=token)
 
 

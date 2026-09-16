@@ -1,3 +1,0 @@
-neuprint-python
-plotly
-pandas
